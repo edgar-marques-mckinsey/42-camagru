@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/files:/usr/share/nginx/html
+    networks:
+      - internal
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
