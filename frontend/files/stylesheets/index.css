@@ -1,0 +1,11 @@
+body {
+    background: gainsboro;
+    padding: 160px 40px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0 auto 40px;
+}
