@@ -24,7 +24,8 @@ services:
       - api_network
       - database_network
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   database:
     image: postgres:14-alpine
@@ -36,6 +37,12 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     networks:
       - database_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      retries: 10
+      start_period: 5s
+      timeout: 10s
     volumes:
       - database_data:/var/lib/postgresql/data
       - ./database/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
