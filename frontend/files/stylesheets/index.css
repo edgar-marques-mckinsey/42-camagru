@@ -1,11 +1,16 @@
 body {
     background: gainsboro;
-    padding: 160px 40px;
+}
+
+main {
+    padding: 90px 0;
+    /* 96px is the height of the navbar */
+    margin-top: 96px;
 }
 
 h1 {
     text-align: center;
-    font-size: 48px;
-    font-weight: 700;
-    margin: 0 auto 40px;
+    font-size: 48px !important;
+    font-weight: 700 !important;
+    margin: 0 auto 40px !important;
 }
