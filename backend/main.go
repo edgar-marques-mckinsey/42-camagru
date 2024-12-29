@@ -4,18 +4,17 @@ import (
 	"log"
 	"net/http"
 
-	"backend/utils"
-
 	"github.com/gorilla/mux"
+
+	"backend/routes"
+	"backend/utils"
 )
 
 func main() {
 	utils.InitDB()
+
 	router := mux.NewRouter()
+	routes.InitRoutes(router)
 
-	router.HandleFunc("/users", GetUsers).Methods("GET")
-	router.HandleFunc("/users/{id}", GetUser).Methods("GET")
-	router.HandleFunc("/users", CreateUser).Methods("POST")
-
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Println(http.ListenAndServe(":8000", router))
 }
