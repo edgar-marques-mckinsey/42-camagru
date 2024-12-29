@@ -15,13 +15,13 @@ func InitDB() error {
 
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal("Error opening database: ", err)
+		log.Println("Error opening database: ", err)
 		return err
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal("Error opening database: ", err)
+		log.Println("Error opening database: ", err)
 		return err
 	}
 

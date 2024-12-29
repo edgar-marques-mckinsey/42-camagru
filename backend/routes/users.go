@@ -2,20 +2,19 @@ package routes
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 
 	"backend/models"
+	"backend/utils"
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := models.GetUsers()
 	if err != nil {
-		log.Println(err)
-		json.NewEncoder(w).Encode(err)
+		utils.SendError(w, "Invalid users query")
 		return
 	}
 
@@ -27,15 +26,13 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Println(err)
-		json.NewEncoder(w).Encode(err)
+		utils.SendError(w, "Invalid user ID")
 		return
 	}
 
 	user, err := models.GetUser(id)
 	if err != nil {
-		log.Println(err)
-		json.NewEncoder(w).Encode(err)
+		utils.SendError(w, "Invalid user query")
 		return
 	}
 

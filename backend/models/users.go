@@ -1,7 +1,6 @@
 package models
 
 import (
-	"log"
 	"time"
 
 	"backend/utils"
@@ -17,13 +16,11 @@ type User struct {
 
 func GetUsers() ([]User, error) {
 	db := utils.GetDB()
-
 	rows, err := db.Query(`
 			SELECT id, username, email, password, created_at
 			FROM users
 		`)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -31,7 +28,6 @@ func GetUsers() ([]User, error) {
 	for rows.Next() {
 		var user User
 		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt); err != nil {
-			log.Println(err)
 			return nil, err
 		}
 		users = append(users, user)
@@ -42,7 +38,6 @@ func GetUsers() ([]User, error) {
 
 func GetUser(id int) (User, error) {
 	db := utils.GetDB()
-
 	row := db.QueryRow(`
 			SELECT id, username, email, password, created_at
 			FROM users
@@ -52,7 +47,6 @@ func GetUser(id int) (User, error) {
 	var user User
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
 	if err != nil {
-		log.Println(err)
 		return User{}, err
 	}
 
