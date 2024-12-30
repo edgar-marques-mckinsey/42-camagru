@@ -7,7 +7,12 @@ const navbar = `
                 </a>
             </li>
             <li>
-                <a href="/login.html" class="hover:underline">
+                <a href="/sign-up" class="hover:underline">
+                    Sign up
+                </a>
+            </li>
+            <li>
+                <a href="/login" class="hover:underline">
                     Login
                 </a>
             </li>
