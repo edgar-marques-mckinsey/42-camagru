@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"backend/utils"
+	"backend/validity"
 )
 
 type User struct {
@@ -51,4 +52,12 @@ func GetUser(id int) (User, error) {
 	}
 
 	return user, nil
+}
+
+func CreateUser(username, email, password string) (User, error) {
+	err := validity.ValidateUser(username, email, password)
+	if err != nil {
+		return User{}, err
+	}
+	return User{}, nil
 }

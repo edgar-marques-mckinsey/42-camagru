@@ -39,6 +39,27 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
+type NewUserInput struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("CreateUser")
+	var newUserInput NewUserInput
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&newUserInput)
+	if err != nil {
+		utils.SendError(w, "Invalid user input")
+		return
+	}
+
+	newUser, err := models.CreateUser(newUserInput.Username, newUserInput.Email, newUserInput.Password)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	json.NewEncoder(w).Encode(newUser)
 }
