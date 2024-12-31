@@ -39,30 +39,45 @@
                 </label>
 
                 <input type="submit" value="Sign up">
+
+                <div class="form-error">
+                    <!-- Error message will be displayed here -->
+                </div>
             </form>
         </section>
     </main>
 
     <script>
-        const handleSubmit = (event) => {
+        const setError = (message = "") => {
+            const formError = document.querySelector('.form-error');
+            formError.style.display = message ? 'block' : 'none';
+            formError.innerHTML = message;
+        }
+
+        const handleSubmit = async (event) => {
             event.preventDefault();
 
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
+            let isValid = false;
 
-            const response = fetch('http://localhost:3000/api/users', {
+            const response = await fetch('http://localhost:3000/api/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data),
             }).then((response) => {
-                response.json()
-            }).then((data) => {
-                console.log(data);
-            }).catch((error) => {
-                console.error(error);
+                isValid = response.status >= 200 && response.status <= 299;
+                return response.json()
             });
+
+            if (!isValid) {
+                setError(response.message);
+                return;
+            }
+
+            setError("");
         }
     </script>
 </body>
