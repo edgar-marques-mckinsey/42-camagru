@@ -54,10 +54,22 @@ func GetUser(id int) (User, error) {
 	return user, nil
 }
 
-func CreateUser(username, email, password string) (User, error) {
+func CreateUser(username, email, password string) error {
 	err := validity.ValidateUser(username, email, password)
 	if err != nil {
-		return User{}, err
+		return err
 	}
-	return User{}, nil
+
+	hashPassword, err := utils.HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	db := utils.GetDB()
+	_, err = db.Exec(`
+			INSERT INTO users (username, email, password)
+			VALUES ($1, $2, $3)
+		`, username, email, hashPassword)
+
+	return err
 }

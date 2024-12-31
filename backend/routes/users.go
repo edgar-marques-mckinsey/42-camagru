@@ -18,7 +18,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(users)
+	utils.SendMessage(w, users)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +36,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	utils.SendMessage(w, user)
 }
 
 type NewUserInput struct {
@@ -55,11 +55,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUser, err := models.CreateUser(newUserInput.Username, newUserInput.Email, newUserInput.Password)
+	err = models.CreateUser(newUserInput.Username, newUserInput.Email, newUserInput.Password)
 	if err != nil {
 		utils.SendError(w, err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(newUser)
+	utils.SendMessage(w, "User created successfully", http.StatusCreated)
 }
