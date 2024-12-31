@@ -12,8 +12,8 @@ const navbar = `
                 </a>
             </li>
             <li>
-                <a href="/login" class="hover:underline">
-                    Login
+                <a href="/sign-in" class="hover:underline">
+                    Sign in
                 </a>
             </li>
         </ul>
