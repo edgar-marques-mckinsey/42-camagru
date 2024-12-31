@@ -64,12 +64,39 @@ func ValidateEmail(email string) error {
 	return nil
 }
 
+func ValidatePassword(password string) error {
+	if (len(password) < 8) || (len(password) > 20) {
+		return errors.New("password must be between 8 and 20 characters")
+	}
+	re := regexp.MustCompile("[A-Z]")
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one uppercase letter")
+	}
+	re = regexp.MustCompile("[a-z]")
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one lowercase letter")
+	}
+	re = regexp.MustCompile("[0-9]")
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one digit")
+	}
+	re = regexp.MustCompile(`[!@#$%^&*()_+={}\[\]:;"\'<>,.?/-]`)
+	if !re.MatchString(password) {
+		return errors.New("password must contain at least one special character")
+	}
+	return nil
+}
+
 func ValidateUser(username, email, password string) error {
 	err := ValidateUsername(username)
 	if err != nil {
 		return err
 	}
 	err = ValidateEmail(email)
+	if err != nil {
+		return err
+	}
+	err = ValidatePassword(password)
 	if err != nil {
 		return err
 	}
