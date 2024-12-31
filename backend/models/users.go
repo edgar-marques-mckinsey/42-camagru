@@ -54,6 +54,23 @@ func GetUser(id int) (User, error) {
 	return user, nil
 }
 
+func GetUserByUsername(username string) (User, error) {
+	db := utils.GetDB()
+	row := db.QueryRow(`
+			SELECT id, username, email, password, created_at
+			FROM users
+			WHERE username = $1
+		`, username)
+
+	var user User
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
 func CreateUser(username, email, password string) error {
 	err := validity.ValidateUser(username, email, password)
 	if err != nil {
