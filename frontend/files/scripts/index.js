@@ -25,14 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.apiFetch = (path, options) => {
-    const userId = localStorage.getItem("x-user-id");
-    const authToken = localStorage.getItem("x-auth-token");
+    const userID = localStorage.getItem("X-User-ID");
+    const authToken = localStorage.getItem("X-Auth-Token");
 
     return fetch('http://localhost:3000/api' + path, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
-            'X-User-ID': userId,
+            'X-User-ID': userID,
             'X-Auth-Token': authToken,
             ...options.headers,
         },

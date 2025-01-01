@@ -95,7 +95,7 @@ func SignInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authToken, err := utils.GenerateJWT(user.Username)
+	authToken, err := utils.GenerateJWT(user.ID)
 	if err != nil {
 		utils.SendError(w, "Something went wrong")
 		return
@@ -106,4 +106,12 @@ func SignInUser(w http.ResponseWriter, r *http.Request) {
 		Token: authToken,
 	}
 	utils.SendMessage(w, response)
+}
+
+func AuthUser(w http.ResponseWriter, r *http.Request) {
+	if utils.IsRequestAuthenticated(r) {
+		utils.SendMessage(w, "Authorized")
+	} else {
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+	}
 }
