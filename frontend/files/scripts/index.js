@@ -23,3 +23,18 @@ const navbar = `
 document.addEventListener('DOMContentLoaded', () => {
     document.body.insertAdjacentHTML('afterbegin', navbar);
 });
+
+window.apiFetch = (path, options) => {
+    const userId = localStorage.getItem("x-user-id");
+    const authToken = localStorage.getItem("x-auth-token");
+
+    return fetch('http://localhost:3000/api' + path, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Token': authToken,
+            ...options.headers,
+        },
+    });
+}

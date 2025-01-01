@@ -69,6 +69,11 @@ type SignInUserInput struct {
 	Password string `json:"password"`
 }
 
+type SignInUserResponse struct {
+	ID    int    `json:"id"`
+	Token string `json:"token"`
+}
+
 func SignInUser(w http.ResponseWriter, r *http.Request) {
 	var inputUser SignInUserInput
 
@@ -90,5 +95,15 @@ func SignInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendMessage(w, "User signed in successfully")
+	authToken, err := utils.GenerateJWT(user.Username)
+	if err != nil {
+		utils.SendError(w, "Something went wrong")
+		return
+	}
+
+	response := SignInUserResponse{
+		ID:    user.ID,
+		Token: authToken,
+	}
+	utils.SendMessage(w, response)
 }

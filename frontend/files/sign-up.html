@@ -61,11 +61,8 @@
             const data = Object.fromEntries(formData.entries());
             let isValid = false;
 
-            const response = await fetch('http://localhost:3000/api/users', {
+            const response = await apiFetch('/users', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify(data),
             }).then((response) => {
                 isValid = response.status >= 200 && response.status <= 299;
