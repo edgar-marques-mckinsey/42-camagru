@@ -39,6 +39,50 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	utils.SendMessage(w, user)
 }
 
+type EditUserInput struct {
+	Username        string `json:"username"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm-password"`
+}
+
+func EditUser(w http.ResponseWriter, r *http.Request) {
+	var inputUser EditUserInput
+
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.SendError(w, "Invalid user ID")
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&inputUser)
+	if err != nil {
+		utils.SendError(w, "Invalid user input")
+		return
+	}
+
+	if inputUser.Username+inputUser.Email+inputUser.Password == "" {
+		utils.SendError(w, "Nothing to edit")
+		return
+	}
+
+	if inputUser.Password != "" && inputUser.Password != inputUser.ConfirmPassword {
+		utils.SendError(w, "Passwords do not match")
+		return
+	}
+
+	err = models.EditUser(id, inputUser.Username, inputUser.Email, inputUser.Password)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	utils.SendMessage(w, "User edited successfully")
+}
+
 type CreateUserInput struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`

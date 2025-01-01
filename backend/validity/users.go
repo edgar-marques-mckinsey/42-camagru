@@ -87,18 +87,24 @@ func ValidatePassword(password string) error {
 	return nil
 }
 
-func ValidateUser(username, email, password string) error {
-	err := ValidateUsername(username)
-	if err != nil {
-		return err
+func ValidateUser(username, email, password string, isCreateAction bool) error {
+	if isCreateAction || username != "" {
+		err := ValidateUsername(username)
+		if err != nil {
+			return err
+		}
 	}
-	err = ValidateEmail(email)
-	if err != nil {
-		return err
+	if isCreateAction || email != "" {
+		err := ValidateEmail(email)
+		if err != nil {
+			return err
+		}
 	}
-	err = ValidatePassword(password)
-	if err != nil {
-		return err
+	if isCreateAction || password != "" {
+		err := ValidatePassword(password)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
