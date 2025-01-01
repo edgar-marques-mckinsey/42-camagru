@@ -21,6 +21,10 @@ const navbar = `
 `;
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (routeNeedsAuth() && !isUserAuthenticated()) {
+        window.location.href = '/sign-in';
+    }
+
     document.body.insertAdjacentHTML('afterbegin', navbar);
 });
 
@@ -34,7 +38,63 @@ window.apiFetch = (path, options) => {
             'Content-Type': 'application/json',
             'X-User-ID': userID,
             'X-Auth-Token': authToken,
-            ...options.headers,
+            ...(options?.headers || {}),
         },
     });
+}
+
+const SKIP_AUTH_PAGES = [
+    '/',
+    '/sign-up',
+    '/sign-in',
+];
+
+window.routeNeedsAuth = () => {
+    return !SKIP_AUTH_PAGES.includes(window.location.pathname);
+}
+
+window.isUserAuthenticated = () => {
+    apiFetch('/users/auth', {
+        method: 'POST',
+    }).then((response) => {
+        if (response.status === 200) {
+            return true;
+        } else {
+            return false;
+        }
+    })
+    .catch(() => {
+        return false;
+    });
+}
+
+window.handleFormSubmit = async (event, path, callback) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+    let isValid = false;
+
+    const response = await apiFetch(path, {
+        method: 'POST',
+        body: JSON.stringify(data),
+    }).then((response) => {
+        isValid = response.status >= 200 && response.status <= 299;
+        return response.json()
+    });
+
+    if (!isValid) {
+        setFormError(response.message);
+        return;
+    }
+
+    setFormError("");
+
+    callback(response);
+}
+
+window.setFormError = (message = "") => {
+    const formError = document.querySelector('.form-error');
+    formError.style.display = message ? 'block' : 'none';
+    formError.innerHTML = message;
 }

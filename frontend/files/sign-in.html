@@ -41,40 +41,13 @@
     </main>
 
     <script>
-        const setError = (message = "") => {
-            const formError = document.querySelector('.form-error');
-            formError.style.display = message ? 'block' : 'none';
-            formError.innerHTML = message;
-        }
-
-        const handleSubmit = async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            let isValid = false;
-
-            const response = await apiFetch('/users/sign-in', {
-                method: 'POST',
-                body: JSON.stringify(data),
-            }).then((response) => {
-                isValid = response.status >= 200 && response.status <= 299;
-                return response.json()
-            });
-
-            if (!isValid) {
-                setError(response.message);
-                return;
-            }
-
+        const handleSubmit = () => handleFormSubmit(event, '/users/sign-in', (response) => {
             const responseData = response.data;
             localStorage.setItem("X-User-ID", responseData.id);
             localStorage.setItem("X-Auth-Token", responseData.token);
 
-            setError("");
-
             window.location.href = '/';
-        }
+        });
     </script>
 </body>
 </html>
