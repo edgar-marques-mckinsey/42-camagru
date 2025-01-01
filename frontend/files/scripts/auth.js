@@ -23,11 +23,14 @@ window.isUserAuthenticated = async () => {
     });
 }
 
+window.removeAuth = () => {
+    localStorage.removeItem('X-User-ID');
+    localStorage.removeItem('X-Auth-Token');
+}
+
 window.handleLogout = (event) => {
     event.preventDefault();
 
-    localStorage.removeItem('X-User-ID');
-    localStorage.removeItem('X-Auth-Token');
-
+    removeAuth();
     window.location.href = '/';
 }

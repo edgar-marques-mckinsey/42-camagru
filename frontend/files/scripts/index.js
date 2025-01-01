@@ -6,6 +6,9 @@ import "./components/index.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const isAuth = await window.isUserAuthenticated();
+    if (!isAuth) {
+        removeAuth();
+    }
     if (routeNeedsAuth() && !isAuth) {
         window.location.href = '/sign-in';
     }

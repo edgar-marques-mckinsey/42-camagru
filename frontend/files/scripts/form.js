@@ -1,12 +1,17 @@
-window.handleFormSubmit = async (event, path, callback) => {
+window.handleFormSubmit = async (event, path, method, callback) => {
     event.preventDefault();
+
+    if (typeof method === 'function') {
+        callback = method;
+        method = 'POST';
+    }
 
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());
     let isValid = false;
 
     const response = await apiFetch(path, {
-        method: 'POST',
+        method,
         body: JSON.stringify(data),
     }).then((response) => {
         isValid = response.status >= 200 && response.status <= 299;

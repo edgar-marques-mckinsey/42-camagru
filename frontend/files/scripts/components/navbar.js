@@ -22,6 +22,11 @@ window.generateNavbar = (isAuth) => `
                 </a>
             </li>
             <li class="${isAuth ? "" : "hidden"}">
+                <a href="/edit-profile" class="hover:underline">
+                    Edit profile
+                </a>
+            </li>
+            <li class="${isAuth ? "" : "hidden"}">
                 <a href="/sign-out" class="hover:underline" onclick="handleLogout(event)">
                     Sign out
                 </a>

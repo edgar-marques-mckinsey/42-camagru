@@ -25,6 +25,12 @@ h1 {
     border-radius: 6px;
     margin: 0 auto;
 
+    p {
+        color: white;
+        font-weight: 300;
+        line-height: 1.2;
+    }
+
     label {
         display: flex;
         flex-direction: column;

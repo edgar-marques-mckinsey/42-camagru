@@ -1,4 +1,4 @@
-window.apiFetch = (path, options) => {
+window.apiFetch = async (path, options = {}) => {
     const userID = localStorage.getItem("X-User-ID");
     const authToken = localStorage.getItem("X-Auth-Token");
 
