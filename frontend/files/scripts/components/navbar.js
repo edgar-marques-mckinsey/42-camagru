@@ -22,7 +22,7 @@ window.generateNavbar = (isAuth) => `
                 </a>
             </li>
             <li class="${isAuth ? "" : "hidden"}">
-                <a href="/edit-profile" class="hover:underline">
+                <a href="/users/edit" class="hover:underline">
                     Edit profile
                 </a>
             </li>

@@ -2,6 +2,7 @@ const PAGES_TO_SKIP_AUTH = [
     '/',
     '/sign-up',
     '/sign-in',
+    '/users/verify',
 ];
 
 window.routeNeedsAuth = () => {
