@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -11,17 +12,19 @@ import (
 )
 
 type User struct {
-	ID        int       `json:"id"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"`
-	CreatedAt time.Time `json:"created_at"`
+	ID               int       `json:"id"`
+	Username         string    `json:"username"`
+	Email            string    `json:"email"`
+	Password         string    `json:"-"`
+	WasEmailVerified bool      `json:"was_email_verified"`
+	VerificationCode string    `json:"verification_code"`
+	CreatedAt        time.Time `json:"created_at"`
 }
 
 func GetUsers() ([]User, error) {
 	db := utils.GetDB()
 	rows, err := db.Query(`
-			SELECT id, username, email, password, created_at
+			SELECT id, username, email, password, was_email_verified, verification_code, created_at
 			FROM users
 		`)
 	if err != nil {
@@ -31,7 +34,7 @@ func GetUsers() ([]User, error) {
 	users := []User{}
 	for rows.Next() {
 		var user User
-		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
+		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.VerificationCode, &user.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -44,13 +47,13 @@ func GetUsers() ([]User, error) {
 func GetUser(id int) (User, error) {
 	db := utils.GetDB()
 	row := db.QueryRow(`
-			SELECT id, username, email, password, created_at
+			SELECT id, username, email, password, was_email_verified, verification_code, created_at
 			FROM users
 			WHERE id = $1
 		`, id)
 
 	var user User
-	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.VerificationCode, &user.CreatedAt)
 	if err != nil {
 		return User{}, err
 	}
@@ -61,13 +64,13 @@ func GetUser(id int) (User, error) {
 func GetUserByUsername(username string) (User, error) {
 	db := utils.GetDB()
 	row := db.QueryRow(`
-			SELECT id, username, email, password, created_at
+			SELECT id, username, email, password, was_email_verified, verification_code, created_at
 			FROM users
 			WHERE username = $1
 		`, username)
 
 	var user User
-	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.VerificationCode, &user.CreatedAt)
 	if err != nil {
 		return User{}, err
 	}
@@ -122,6 +125,17 @@ func EditUser(id int, username, email, password string) error {
 	return err
 }
 
+var LETTER_RUNES = []rune("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func GenerateVerificationCode() string {
+	length := 16
+	res := make([]rune, length)
+	for i := range res {
+		res[i] = LETTER_RUNES[rand.Intn(len(LETTER_RUNES))]
+	}
+	return string(res)
+}
+
 func CreateUser(username, email, password string) error {
 	err := validity.ValidateUser(username, email, password, true)
 	if err != nil {
@@ -133,11 +147,13 @@ func CreateUser(username, email, password string) error {
 		return err
 	}
 
+	verificationCode := GenerateVerificationCode()
+
 	db := utils.GetDB()
 	_, err = db.Exec(`
-			INSERT INTO users (username, email, password)
-			VALUES ($1, $2, $3)
-		`, username, email, hashPassword)
+			INSERT INTO users (username, email, password, verification_code)
+			VALUES ($1, $2, $3, $4)
+		`, username, email, hashPassword, verificationCode)
 
 	return err
 }

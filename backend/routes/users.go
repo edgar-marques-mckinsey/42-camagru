@@ -105,6 +105,19 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := models.GetUserByUsername(inputUser.Username)
+	if err != nil {
+		utils.SendError(w, "Something went wrong")
+	}
+
+	emailSubject := "Email Verification"
+	emailContent := "Please verify your email by clicking the link below:\n" +
+		"http://localhost:3000/users/verify?userId=" + strconv.Itoa(user.ID) + "\n\n" +
+		"And use the following code to verify your email:\n" +
+		user.VerificationCode
+
+	utils.SendEmail(user.Email, emailSubject, emailContent)
+
 	utils.SendMessage(w, "User created successfully", http.StatusCreated)
 }
 
@@ -136,6 +149,11 @@ func SignInUser(w http.ResponseWriter, r *http.Request) {
 
 	if !utils.IsPasswordValid(user.Password, inputUser.Password) {
 		utils.SendError(w, "Invalid password")
+		return
+	}
+
+	if !user.WasEmailVerified {
+		utils.SendError(w, "Email not verified")
 		return
 	}
 
