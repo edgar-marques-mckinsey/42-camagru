@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 
@@ -125,6 +126,26 @@ func EditUser(id int, username, email, password string) error {
 	return err
 }
 
+func VerifyUser(id int, verificationCode string) error {
+	user, err := GetUser(id)
+	if err != nil {
+		return errors.New("invalid user query")
+	}
+
+	if user.VerificationCode != verificationCode {
+		return errors.New("invalid verification code")
+	}
+
+	db := utils.GetDB()
+	_, err = db.Exec(`
+		UPDATE users
+		SET was_email_verified = $1
+		WHERE id = $2
+	`, true, id)
+
+	return err
+}
+
 var LETTER_RUNES = []rune("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func GenerateVerificationCode() string {
@@ -156,4 +177,21 @@ func CreateUser(username, email, password string) error {
 		`, username, email, hashPassword, verificationCode)
 
 	return err
+}
+
+func SendVerificationEmail(username string) error {
+	user, err := GetUserByUsername(username)
+	if err != nil {
+		return errors.New("something went wrong")
+	}
+
+	emailSubject := "Email Verification"
+	emailContent := "Please verify your email by clicking the link below:\n" +
+		"http://localhost:3000/users/verify?userId=" + strconv.Itoa(user.ID) + "\n\n" +
+		"And use the following code to verify your email:\n" +
+		user.VerificationCode
+
+	utils.SendEmail(user.Email, emailSubject, emailContent)
+
+	return nil
 }

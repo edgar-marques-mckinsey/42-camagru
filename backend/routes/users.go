@@ -83,6 +83,37 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 	utils.SendMessage(w, "User edited successfully")
 }
 
+type VerifyUserInput struct {
+	VerificationCode string `json:"verification-code"`
+}
+
+func VerifyUser(w http.ResponseWriter, r *http.Request) {
+	var inputUser VerifyUserInput
+
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.SendError(w, "Invalid user ID")
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&inputUser)
+	if err != nil {
+		utils.SendError(w, "Invalid user input")
+		return
+	}
+
+	err = models.VerifyUser(id, inputUser.VerificationCode)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	utils.SendMessage(w, "User verified successfully")
+}
+
 type CreateUserInput struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -105,18 +136,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := models.GetUserByUsername(inputUser.Username)
+	err = models.SendVerificationEmail(inputUser.Username)
 	if err != nil {
-		utils.SendError(w, "Something went wrong")
+		utils.SendError(w, err.Error())
+		return
 	}
-
-	emailSubject := "Email Verification"
-	emailContent := "Please verify your email by clicking the link below:\n" +
-		"http://localhost:3000/users/verify?userId=" + strconv.Itoa(user.ID) + "\n\n" +
-		"And use the following code to verify your email:\n" +
-		user.VerificationCode
-
-	utils.SendEmail(user.Email, emailSubject, emailContent)
 
 	utils.SendMessage(w, "User created successfully", http.StatusCreated)
 }

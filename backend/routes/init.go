@@ -26,6 +26,7 @@ func InitRoutes(router *mux.Router) {
 	routerWithAuth.HandleFunc("/users", GetUsers).Methods("GET")
 	routerWithAuth.HandleFunc("/users/{id}", GetUser).Methods("GET")
 	routerWithAuth.HandleFunc("/users/{id}", EditUser).Methods("PATCH")
+	router.HandleFunc("/users/{id}/verify", VerifyUser).Methods("POST")
 	router.HandleFunc("/users", CreateUser).Methods("POST")
 	router.HandleFunc("/users/sign-in", SignInUser).Methods("POST")
 	router.HandleFunc("/users/auth", AuthUser).Methods("POST")
