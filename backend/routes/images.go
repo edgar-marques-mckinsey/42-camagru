@@ -58,3 +58,23 @@ func GetImages(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendMessage(w, images)
 }
+
+func GetImage(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.SendError(w, "Invalid image ID")
+		return
+	}
+
+	imageData, err := models.GetImage(id)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.WriteHeader(http.StatusOK)
+	w.Write(imageData)
+}

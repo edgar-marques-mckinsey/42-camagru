@@ -44,3 +44,20 @@ func GetImages() ([]Image, error) {
 
 	return images, nil
 }
+
+func GetImage(id int) ([]byte, error) {
+	db := utils.GetDB()
+	row := db.QueryRow(`
+			SELECT data
+			FROM images
+			WHERE id = $1
+		`, id)
+
+	var imageData []byte
+	err := row.Scan(&imageData)
+	if err != nil {
+		return nil, err
+	}
+
+	return imageData, nil
+}
