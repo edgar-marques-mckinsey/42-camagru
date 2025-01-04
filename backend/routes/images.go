@@ -48,3 +48,13 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendMessage(w, "Image created successfully", http.StatusCreated)
 }
+
+func GetImages(w http.ResponseWriter, r *http.Request) {
+	images, err := models.GetImages()
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	utils.SendMessage(w, images)
+}

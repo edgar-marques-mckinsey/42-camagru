@@ -36,4 +36,5 @@ func InitRoutes(router *mux.Router) {
 
 	// Images
 	routerWithAuth.HandleFunc("/users/{id}/images", CreateImage).Methods("POST")
+	router.HandleFunc("/images", GetImages).Methods("GET")
 }
