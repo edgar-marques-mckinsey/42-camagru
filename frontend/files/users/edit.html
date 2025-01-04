@@ -79,8 +79,6 @@
         });
 
         const handleSubmit = () => handleFormSubmit(event, `/users/${userId}`, 'PATCH', (response) => {
-            const responseData = response.data;
-
             window.location.href = '/users/edit';
         });
     </script>
