@@ -14,5 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const navbar = generateNavbar(isAuth)
+    const footer = generateFooter();
+
     document.body.insertAdjacentHTML('afterbegin', navbar);
+    document.body.insertAdjacentHTML('beforeend', footer);
 });
