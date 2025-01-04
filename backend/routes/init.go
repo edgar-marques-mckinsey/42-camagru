@@ -30,4 +30,5 @@ func InitRoutes(router *mux.Router) {
 	router.HandleFunc("/users", CreateUser).Methods("POST")
 	router.HandleFunc("/users/sign-in", SignInUser).Methods("POST")
 	router.HandleFunc("/users/auth", AuthUser).Methods("POST")
+	router.HandleFunc("/users/forgot-password", RequestPasswordChange).Methods("POST")
 }

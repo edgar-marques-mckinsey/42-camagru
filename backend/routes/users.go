@@ -201,3 +201,39 @@ func AuthUser(w http.ResponseWriter, r *http.Request) {
 		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
 	}
 }
+
+type RequestPasswordChangeRequest struct {
+	Username string `json:"username"`
+}
+
+type RequestPasswordChangeResponse struct {
+	RenewPasswordURL string `json:"renew-password-url"`
+}
+
+func RequestPasswordChange(w http.ResponseWriter, r *http.Request) {
+	var inputUser RequestPasswordChangeRequest
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputUser)
+	if err != nil {
+		utils.SendError(w, "Invalid input")
+		return
+	}
+
+	user, err := models.GetUserByUsername(inputUser.Username)
+	if err != nil {
+		utils.SendError(w, "Invalid username")
+		return
+	}
+
+	RenewPasswordURL, err := models.RequestPasswordChange(user.ID, user.Email)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	response := RequestPasswordChangeResponse{
+		RenewPasswordURL: RenewPasswordURL,
+	}
+	utils.SendMessage(w, response)
+}

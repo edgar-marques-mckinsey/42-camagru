@@ -186,7 +186,7 @@ func SendVerificationEmail(username string) error {
 	}
 
 	emailSubject := "Email Verification"
-	emailContent := "Please verify your email by clicking the link below:\n" +
+	emailContent := "Please follow the link below:\n" +
 		"http://localhost:3000/users/verify?userId=" + strconv.Itoa(user.ID) + "\n\n" +
 		"And use the following code to verify your email:\n" +
 		user.VerificationCode
@@ -194,4 +194,29 @@ func SendVerificationEmail(username string) error {
 	utils.SendEmail(user.Email, emailSubject, emailContent)
 
 	return nil
+}
+
+func RequestPasswordChange(id int, email string) (string, error) {
+	newVerificationCode := GenerateVerificationCode()
+	renewPasswordURL := "http://localhost:3000/users/renew-password?userId=" + strconv.Itoa(id)
+
+	db := utils.GetDB()
+	_, err := db.Exec(`
+		UPDATE users
+		SET verification_code = $1
+		WHERE id = $2
+	`, newVerificationCode, id)
+	if err != nil {
+		return "", err
+	}
+
+	emailSubject := "Password Change"
+	emailContent := "Please follow the link below:\n" +
+		renewPasswordURL + "\n\n" +
+		"And use the following code to renew your email:\n" +
+		newVerificationCode
+
+	utils.SendEmail(email, emailSubject, emailContent)
+
+	return renewPasswordURL, nil
 }
