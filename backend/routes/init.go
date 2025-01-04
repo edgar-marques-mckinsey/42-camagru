@@ -23,6 +23,7 @@ func InitRoutes(router *mux.Router) {
 	routerWithAuth := router.NewRoute().Subrouter()
 	routerWithAuth.Use(AuthMiddleware)
 
+	// Users
 	routerWithAuth.HandleFunc("/users", GetUsers).Methods("GET")
 	routerWithAuth.HandleFunc("/users/{id}", GetUser).Methods("GET")
 	routerWithAuth.HandleFunc("/users/{id}", EditUser).Methods("PATCH")
@@ -32,4 +33,7 @@ func InitRoutes(router *mux.Router) {
 	router.HandleFunc("/users/sign-in", SignInUser).Methods("POST")
 	router.HandleFunc("/users/auth", AuthUser).Methods("POST")
 	router.HandleFunc("/users/forgot-password", RequestPasswordChange).Methods("POST")
+
+	// Images
+	routerWithAuth.HandleFunc("/users/{id}/images", CreateImage).Methods("POST")
 }
