@@ -45,6 +45,30 @@ func GetImages() ([]Image, error) {
 	return images, nil
 }
 
+func GetUserImages(id int) ([]Image, error) {
+	db := utils.GetDB()
+	rows, err := db.Query(`
+			SELECT id, user_id, data, created_at
+			FROM images
+			WHERE user_id = $1
+		`, id)
+	if err != nil {
+		return nil, err
+	}
+
+	images := []Image{}
+	for rows.Next() {
+		var image Image
+		err := rows.Scan(&image.ID, &image.UserID, &image.Data, &image.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		images = append(images, image)
+	}
+
+	return images, nil
+}
+
 func GetImage(id int) ([]byte, error) {
 	db := utils.GetDB()
 	row := db.QueryRow(`

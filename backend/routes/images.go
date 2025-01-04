@@ -59,6 +59,24 @@ func GetImages(w http.ResponseWriter, r *http.Request) {
 	utils.SendMessage(w, images)
 }
 
+func GetUserImages(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.SendError(w, "Invalid user ID")
+		return
+	}
+
+	images, err := models.GetUserImages(id)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	utils.SendMessage(w, images)
+}
+
 func GetImage(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
