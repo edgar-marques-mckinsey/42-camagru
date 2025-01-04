@@ -16,6 +16,128 @@
                 Profile
             </h1>
         </section>
+
+        <section class="container px-4 mx-auto">
+            <div class="flex gap-2 mb-4">
+                <button
+                    action="toggle-camera"
+                    class="text-white font-medium bg-gray-800 py-2 px-4 rounded"
+                >
+                    Turn camera
+                </button>
+            </div>
+
+            <div class="relative bg-gray-300 h-[480px] w-[640px] border-2 border-gray-800 rounded-md overflow-hidden">
+                <video
+                    id="webcam"
+                    class="absolute inset-0 h-full w-full"
+                    autoplay
+                >
+                </video>
+
+                <div
+                    id="overlay"
+                    class="absolute inset-0 h-full w-full bg-center bg-no-repeat bg-cover"
+                    style="background-image:none;"
+                >
+                </div>
+            </div>
+
+            <div class="overflow-x-scroll mt-2">
+                <div class="flex gap-2 w-fit">
+                    <button action="select-overlay">
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-01.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-02.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-03.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-04.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-05.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-06.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-07.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-08.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-09.png" alt="Funny cat" />
+                    </button>
+                    <button action="select-overlay">
+                        <img src="/images/overlays/cat-10.png" alt="Funny cat" />
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button
+                    action="capture-photo"
+                    class="text-white font-medium bg-gray-800 py-2 px-4 rounded"
+                >
+                    Capture photo
+                </button>
+            </div>
+        </section>
     </main>
+
+    <script>
+        const buttonTurnCamera = document.querySelector('button[action="toggle-camera"]');
+        const buttonsSelectOverlay = document.querySelectorAll('button[action="select-overlay"]');
+        const buttonCapturePhoto = document.querySelector('button[action="capture-photo"]');
+
+        const webcam = document.getElementById('webcam');
+        const overlay = document.getElementById('overlay');
+
+        const isCameraOn = () => {
+            return webcam.srcObject?.active;
+        }
+
+        const isOverlaySelected = () => {
+            return overlay.style.backgroundImage !== 'none';
+        }
+
+        // Turn on/off the webcam
+        buttonTurnCamera.addEventListener('click', () => {
+            // Stop
+            if (isCameraOn()) {
+                webcam.srcObject.getTracks().forEach(track => track.stop());
+                webcam.srcObject = null;
+                return;
+            }
+
+            // Start
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    webcam.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error("Error accessing the webcam: ", err);
+                });
+        });
+
+        // Select an overlay
+        buttonsSelectOverlay.forEach(button => {
+            button.addEventListener('click', () => {
+                const image = button.querySelector("img");
+                overlay.style.backgroundImage = image?.src ? `url(${image.src})` : 'none';
+            });
+        });
+
+        // Capture a photo
+        buttonCapturePhoto.addEventListener('click', () => {
+            console.log('Capture photo');
+        });
+    </script>
 </body>
 </html>

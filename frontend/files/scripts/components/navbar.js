@@ -1,5 +1,5 @@
 window.generateNavbar = (isAuth) => `
-    <nav class="fixed top-0 left-0 flex items-center w-full bg-gray-800 text-white h-24 py-6 px-4">
+    <nav class="fixed top-0 left-0 flex items-center w-full bg-gray-800 text-white h-24 py-6 px-4 z-10">
         <ul class="container flex items-center justify-end gap-6 mx-auto">
             <li class="mr-auto">
                 <a href="/">
