@@ -80,6 +80,9 @@
                 </div>
             </div>
 
+            <!-- Helper for capturing the photo -->
+            <canvas id="canvas" class="hidden"></canvas>
+
             <div class="mt-4">
                 <button
                     action="capture-photo"
@@ -98,6 +101,7 @@
 
         const webcam = document.getElementById('webcam');
         const overlay = document.getElementById('overlay');
+        const canvas = document.getElementById('canvas');
 
         const isCameraOn = () => {
             return webcam.srcObject?.active;
@@ -136,7 +140,27 @@
 
         // Capture a photo
         buttonCapturePhoto.addEventListener('click', () => {
-            console.log('Capture photo');
+            canvas.width = webcam.videoWidth;
+            canvas.height = webcam.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+
+            const imageData = canvas.toDataURL('image/png');
+            const base64Image = imageData.split(',')[1];
+
+            apiFetch(`/users/${1}/images`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    image: base64Image,
+                }),
+            }).then((response) => {
+                return response.json()
+            }).then((response) => {
+                console.log(response);
+            }).catch((error) => {
+                console.error('Error capturing photo: ', error);
+            });
         });
     </script>
 </body>
