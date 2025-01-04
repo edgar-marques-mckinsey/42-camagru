@@ -114,6 +114,44 @@ func VerifyUser(w http.ResponseWriter, r *http.Request) {
 	utils.SendMessage(w, "User verified successfully")
 }
 
+type RenewPasswordInput struct {
+	VerificationCode string `json:"verification-code"`
+	Password         string `json:"password"`
+	ConfirmPassword  string `json:"confirm-password"`
+}
+
+func RenewPassword(w http.ResponseWriter, r *http.Request) {
+	var inputUser RenewPasswordInput
+
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.SendError(w, "Invalid user ID")
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&inputUser)
+	if err != nil {
+		utils.SendError(w, "Invalid input")
+		return
+	}
+
+	if inputUser.Password != "" && inputUser.Password != inputUser.ConfirmPassword {
+		utils.SendError(w, "Passwords do not match")
+		return
+	}
+
+	err = models.RenewPassword(id, inputUser.VerificationCode, inputUser.Password)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	utils.SendMessage(w, "Password renewed successfully")
+}
+
 type CreateUserInput struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`

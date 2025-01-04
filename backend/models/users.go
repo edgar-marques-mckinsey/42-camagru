@@ -146,6 +146,31 @@ func VerifyUser(id int, verificationCode string) error {
 	return err
 }
 
+func RenewPassword(id int, verificationCode, password string) error {
+	user, err := GetUser(id)
+	if err != nil {
+		return errors.New("invalid user query")
+	}
+
+	if user.VerificationCode != verificationCode {
+		return errors.New("invalid verification code")
+	}
+
+	hashPassword, err := utils.HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	db := utils.GetDB()
+	_, err = db.Exec(`
+		UPDATE users
+		SET password = $1
+		WHERE id = $2
+	`, hashPassword, id)
+
+	return err
+}
+
 var LETTER_RUNES = []rune("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func GenerateVerificationCode() string {
