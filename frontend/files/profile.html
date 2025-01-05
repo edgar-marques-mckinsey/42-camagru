@@ -25,15 +25,22 @@
                 >
                     Turn camera
                 </button>
+
+                <input
+                    type="file"
+                    accept="image/png"
+                    class="text-white font-medium bg-gray-800 py-2 px-2 rounded"
+                >
             </div>
 
             <div class="relative bg-gray-300 h-[480px] w-[640px] border-2 border-gray-800 rounded-md overflow-hidden">
-                <video
-                    id="webcam"
+                <canvas
+                    id="canvas"
                     class="absolute inset-0 h-full w-full"
-                    autoplay
+                    height="480"
+                    width="640"
                 >
-                </video>
+                </canvas>
 
                 <div
                     id="overlay"
@@ -80,8 +87,8 @@
                 </div>
             </div>
 
-            <!-- Helper for capturing the photo -->
-            <canvas id="canvas" class="hidden"></canvas>
+            <!-- Helper for streaming the video -->
+            <video id="webcam" class="hidden" autoplay></video>
 
             <div class="mt-4">
                 <button
@@ -96,15 +103,47 @@
 
     <script>
         const buttonTurnCamera = document.querySelector('button[action="toggle-camera"]');
+        const buttonFileInput = document.querySelector('input[type="file"]');
         const buttonsSelectOverlay = document.querySelectorAll('button[action="select-overlay"]');
         const buttonCapturePhoto = document.querySelector('button[action="capture-photo"]');
 
-        const webcam = document.getElementById('webcam');
-        const overlay = document.getElementById('overlay');
         const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const overlay = document.getElementById('overlay');
+        const webcam = document.getElementById('webcam');
+
+        let timeouID = null;
 
         const isCameraOn = () => {
             return webcam.srcObject?.active;
+        }
+
+        const stopCamera = () => {
+            if (isCameraOn()) {
+                webcam.srcObject.getTracks().forEach(track => track.stop());
+                webcam.srcObject = null;
+                clearInterval(timeouID);
+            }
+        }
+
+        const startCamera = async () => {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    webcam.srcObject = stream;
+
+                    clearInterval(timeouID);
+                    timeouID = setInterval(() => {
+                        drawImage(webcam)
+                    }, 33);
+                })
+                .catch(err => {
+                    console.error("Error accessing the webcam: ", err);
+                });
+        }
+
+        const drawImage = (image) => {
+            ctx.clearRect(0, 0, ctx.width, ctx.height);
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
         }
 
         const isOverlaySelected = () => {
@@ -113,21 +152,30 @@
 
         // Turn on/off the webcam
         buttonTurnCamera.addEventListener('click', () => {
-            // Stop
             if (isCameraOn()) {
-                webcam.srcObject.getTracks().forEach(track => track.stop());
-                webcam.srcObject = null;
-                return;
+                stopCamera();
+            } else {
+                startCamera();
             }
+        });
 
-            // Start
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    webcam.srcObject = stream;
-                })
-                .catch(err => {
-                    console.error("Error accessing the webcam: ", err);
-                });
+        // Upload an image
+        buttonFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+
+            if (file && file.type === 'image/png') {
+                stopCamera();
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const image = new Image();
+                    image.onload = () => {
+                        drawImage(image);
+                    };
+                    image.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
         });
 
         // Select an overlay
@@ -141,12 +189,6 @@
         // Capture a photo
         buttonCapturePhoto.addEventListener('click', () => {
             const userID = localStorage.getItem("X-User-ID");
-
-            canvas.width = webcam.videoWidth;
-            canvas.height = webcam.videoHeight;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
 
             const imageData = canvas.toDataURL('image/png');
             const base64Image = imageData.split(',')[1];
