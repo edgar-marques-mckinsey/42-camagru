@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="overflow-x-scroll mt-2">
+            <div class="max-w-[640px] overflow-x-scroll mt-2">
                 <div class="flex gap-2 w-fit">
                     <button action="select-overlay">
                     </button>
@@ -113,7 +113,9 @@
         const webcam = document.getElementById('webcam');
 
         let timeouID = null;
+        let selectedOverlay = null;
 
+        // -- Webcam functions
         const isCameraOn = () => {
             return webcam.srcObject?.active;
         }
@@ -137,19 +139,46 @@
                     }, 33);
                 })
                 .catch(err => {
-                    console.error("Error accessing the webcam: ", err);
+                    console.error("Error starting the webcam: ", err);
                 });
         }
 
+        // -- Canvas functions
         const drawImage = (image) => {
             ctx.clearRect(0, 0, ctx.width, ctx.height);
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            checkIfButtonIsDisabled(true);
         }
 
-        const isOverlaySelected = () => {
-            return overlay.style.backgroundImage !== 'none';
+        const canvasHasValues = () => {
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            return data.some(value => value !== 0);
         }
 
+        // -- Overlays functions
+        const changeSelectedOverlay = (index) => {
+            selectedOverlay = index;
+
+            let imageSrc = index ? `url(/images/overlays/cat-${index.toString().padStart(2, '0')}.png)` : 'none';
+            overlay.style.backgroundImage = imageSrc;
+
+            checkIfButtonIsDisabled();
+        }
+
+        // -- Buttons functions
+        isButtonCapturePhotoDisabled = () => {
+            const isValid = canvasHasValues() && selectedOverlay;
+            return !isValid;
+        }
+
+        checkIfButtonIsDisabled = () => {
+            const isDisabled = isButtonCapturePhotoDisabled();
+            buttonCapturePhoto.disabled = isDisabled;
+            buttonCapturePhoto.style.opacity = isDisabled ? 0.5 : 1;
+        }
+
+        // -- Event listeners
         // Turn on/off the webcam
         buttonTurnCamera.addEventListener('click', () => {
             if (isCameraOn()) {
@@ -179,29 +208,31 @@
         });
 
         // Select an overlay
-        buttonsSelectOverlay.forEach(button => {
+        buttonsSelectOverlay.forEach((button, index) => {
             button.addEventListener('click', () => {
-                const image = button.querySelector("img");
-                overlay.style.backgroundImage = image?.src ? `url(${image.src})` : 'none';
+                changeSelectedOverlay(index);
             });
         });
 
         // Capture a photo
         buttonCapturePhoto.addEventListener('click', () => {
+            if (isButtonCapturePhotoDisabled()) {
+                checkIfButtonIsDisabled();
+                return;
+            }
+
             const userID = localStorage.getItem("X-User-ID");
 
             const imageData = canvas.toDataURL('image/png');
             const base64Image = imageData.split(',')[1];
 
-            const overlayURL = overlay.style.backgroundImage
-                .match(/url\(["']?(.*?)["']?\)/)[1]
-                .split("/").pop();
+            const overlayFilename = `cat-${selectedOverlay.toString().padStart(2, '0')}.png`;
 
             apiFetch(`/users/${userID}/images`, {
                 method: 'POST',
                 body: JSON.stringify({
                     image: base64Image,
-                    overlay: overlayURL,
+                    overlay: overlayFilename,
                 }),
             }).then((response) => {
                 return response.json()
@@ -211,6 +242,9 @@
                 console.error('Error capturing photo: ', error);
             });
         });
+
+        // -- Initial setup
+        checkIfButtonIsDisabled();
     </script>
 </body>
 </html>
