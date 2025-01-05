@@ -1,10 +1,16 @@
 button[action="select-overlay"] {
     position: relative;
+    opacity: 0.5;
     height: 68px;
     width: 90px;
     border: 2px solid #1F2937;
     border-radius: 6px;
     overflow: hidden;
+    transition: 0.2s;
+
+    &.selected, &:hover {
+        opacity: 1;
+    }
 
     img {
         position: absolute;
