@@ -18,90 +18,102 @@
         </section>
 
         <section class="container px-4 mx-auto">
-            <div class="flex gap-2 mb-4">
-                <button
-                    action="toggle-camera"
-                    class="text-white font-medium bg-gray-800 py-2 px-4 rounded"
-                >
-                    Turn camera
-                </button>
+            <div class="flex gap-12">
+                <div>
+                    <div class="flex gap-2 mb-4">
+                        <button
+                            action="toggle-camera"
+                            class="text-white font-medium bg-gray-800 py-2 px-4 rounded"
+                        >
+                            Turn camera
+                        </button>
 
-                <input
-                    type="file"
-                    accept="image/png"
-                    class="text-white font-medium bg-gray-800 py-2 px-2 rounded"
-                >
-            </div>
+                        <input
+                            type="file"
+                            accept="image/png"
+                            class="text-white font-medium bg-gray-800 py-2 px-2 rounded"
+                        >
+                    </div>
 
-            <div class="relative bg-gray-400 h-[480px] w-[640px] border-2 border-gray-800 rounded-md overflow-hidden">
-                <canvas
-                    id="canvas"
-                    class="absolute inset-0 h-full w-full"
-                    height="480"
-                    width="640"
-                >
-                </canvas>
+                    <div class="relative bg-gray-400 h-[480px] w-[640px] border-2 border-gray-800 rounded-md overflow-hidden">
+                        <canvas
+                            id="canvas"
+                            class="absolute inset-0 h-full w-full"
+                            height="480"
+                            width="640"
+                        >
+                        </canvas>
+
+                        <div
+                            id="overlay"
+                            class="absolute inset-0 h-full w-full bg-center bg-no-repeat bg-cover"
+                            style="background-image:none;"
+                        >
+                        </div>
+                    </div>
+
+                    <div class="max-w-[640px] overflow-x-scroll mt-2">
+                        <div class="flex gap-2 w-fit">
+                            <button action="select-overlay" class="bg-gray-400 selected">
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-01.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-02.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-03.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-04.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-05.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-06.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-07.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-08.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-09.png" alt="Funny cat" />
+                            </button>
+                            <button action="select-overlay">
+                                <img src="/images/overlays/cat-10.png" alt="Funny cat" />
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Helper for streaming the video -->
+                    <video id="webcam" class="hidden" autoplay></video>
+
+                    <div class="mt-4">
+                        <button
+                            action="capture-photo"
+                            class="text-white font-medium bg-gray-800 py-2 px-4 rounded"
+                        >
+                            Capture photo
+                        </button>
+                    </div>
+                </div>
 
                 <div
-                    id="overlay"
-                    class="absolute inset-0 h-full w-full bg-center bg-no-repeat bg-cover"
-                    style="background-image:none;"
+                    id="images-list"
+                    class="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2 h-fit mt-[62px]"
                 >
                 </div>
-            </div>
-
-            <div class="max-w-[640px] overflow-x-scroll mt-2">
-                <div class="flex gap-2 w-fit">
-                    <button action="select-overlay" class="bg-gray-400 selected">
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-01.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-02.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-03.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-04.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-05.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-06.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-07.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-08.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-09.png" alt="Funny cat" />
-                    </button>
-                    <button action="select-overlay">
-                        <img src="/images/overlays/cat-10.png" alt="Funny cat" />
-                    </button>
-                </div>
-            </div>
-
-            <!-- Helper for streaming the video -->
-            <video id="webcam" class="hidden" autoplay></video>
-
-            <div class="mt-4">
-                <button
-                    action="capture-photo"
-                    class="text-white font-medium bg-gray-800 py-2 px-4 rounded"
-                >
-                    Capture photo
-                </button>
             </div>
         </section>
     </main>
 
     <script>
+        const userID = localStorage.getItem("X-User-ID");
+
         const buttonTurnCamera = document.querySelector('button[action="toggle-camera"]');
         const buttonFileInput = document.querySelector('input[type="file"]');
         const buttonsSelectOverlay = document.querySelectorAll('button[action="select-overlay"]');
@@ -111,6 +123,8 @@
         const ctx = canvas.getContext('2d');
         const overlay = document.getElementById('overlay');
         const webcam = document.getElementById('webcam');
+
+        const imagesList = document.getElementById('images-list');
 
         let timeouID = null;
         let selectedOverlay = null;
@@ -182,6 +196,35 @@
             buttonCapturePhoto.style.opacity = isDisabled ? 0.5 : 1;
         }
 
+        // -- Images list functions
+        const reloadImages = async () => {
+            apiFetch(`/users/${userID}/images`)
+                .then((response) => {
+                    return response.json();
+                }).then((response) => {
+                    const data = response.data || [];
+                    if (!data.length) {
+                        return;
+                    }
+
+                    imagesList.innerHTML = '';
+
+                    data
+                        .sort((a,b) => b.id - a.id)
+                        .slice(0, 12)
+                        .forEach((image) => {
+                            const img = document.createElement('img');
+                            img.src = `api/images/${image.id}`;
+                            img.alt = 'Cool image';
+                            img.classList.add('rounded');
+
+                            imagesList.appendChild(img);
+                        });
+                }).catch((error) => {
+                    console.error('Error fetching images: ', error);
+                });
+        }
+
         // -- Event listeners
         // Turn on/off the webcam
         buttonTurnCamera.addEventListener('click', () => {
@@ -225,8 +268,6 @@
                 return;
             }
 
-            const userID = localStorage.getItem("X-User-ID");
-
             const imageData = canvas.toDataURL('image/png');
             const base64Image = imageData.split(',')[1];
 
@@ -239,9 +280,11 @@
                     overlay: overlayFilename,
                 }),
             }).then((response) => {
-                return response.json()
-            }).then((response) => {
-                console.log(response);
+                if (response.status >= 200 && response.status <= 299) {
+                    reloadImages();
+                    return;
+                }
+                throw new Error('Error capturing photo');
             }).catch((error) => {
                 console.error('Error capturing photo: ', error);
             });
@@ -249,6 +292,10 @@
 
         // -- Initial setup
         checkIfButtonIsDisabled();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            reloadImages();
+        });
     </script>
 </body>
 </html>
