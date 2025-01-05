@@ -140,6 +140,8 @@
 
         // Capture a photo
         buttonCapturePhoto.addEventListener('click', () => {
+            const userID = localStorage.getItem("X-User-ID");
+
             canvas.width = webcam.videoWidth;
             canvas.height = webcam.videoHeight;
 
@@ -149,10 +151,15 @@
             const imageData = canvas.toDataURL('image/png');
             const base64Image = imageData.split(',')[1];
 
-            apiFetch(`/users/${1}/images`, {
+            const overlayURL = overlay.style.backgroundImage
+                .match(/url\(["']?(.*?)["']?\)/)[1]
+                .split("/").pop();
+
+            apiFetch(`/users/${userID}/images`, {
                 method: 'POST',
                 body: JSON.stringify({
                     image: base64Image,
+                    overlay: overlayURL,
                 }),
             }).then((response) => {
                 return response.json()
