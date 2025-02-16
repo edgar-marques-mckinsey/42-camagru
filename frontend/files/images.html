@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camagru App</title>
+    <link rel="stylesheet" href="/stylesheets/index.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="/scripts/index.js"></script>
+</head>
+
+<body>
+    <main>
+        <section class="container px-4 mx-auto">
+            <h1 id="title"></h1>
+        </section>
+
+        <section class="container px-4 mx-auto">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="relative w-fit">
+                    <img
+                        id="image"
+                        class="w-full h-auto max-w-xl rounded"
+                    />
+
+                    <button
+                        onclick="handleImageDelete()"
+                        class="absolute top-2 right-2 fill-gray-800 hover:fill-red-800 w-fit bg-white/50 hover:bg-white/75 p-1 rounded duration-100"
+                        style="display: none;"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0 0 30 30">
+                            <path d="M 14.984375 2.4863281 A 1.0001 1.0001 0 0 0 14 3.5 L 14 4 L 8.5 4 A 1.0001 1.0001 0 0 0 7.4863281 5 L 6 5 A 1.0001 1.0001 0 1 0 6 7 L 24 7 A 1.0001 1.0001 0 1 0 24 5 L 22.513672 5 A 1.0001 1.0001 0 0 0 21.5 4 L 16 4 L 16 3.5 A 1.0001 1.0001 0 0 0 14.984375 2.4863281 z M 6 9 L 7.7929688 24.234375 C 7.9109687 25.241375 8.7633438 26 9.7773438 26 L 20.222656 26 C 21.236656 26 22.088031 25.241375 22.207031 24.234375 L 24 9 L 6 9 z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex flex-col gap-2 py-2">
+                    <p>
+                        <b>
+                            User:
+                        </b>
+                        <span data-to-fill="username"></span>
+                    </p>
+
+                    <p>
+                        <b>
+                            Created at:
+                        </b>
+                        <span data-to-fill="created_at"></span>
+                    </p>
+
+                    <p>
+                        <b>
+                            Num comments:
+                        </b>
+                        <span data-to-fill="num_comments"></span>
+                    </p>
+
+                    <p>
+                        <b>
+                            Num likes:
+                        </b>
+                        <span data-to-fill="num_likes"></span>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const userID = localStorage.getItem("X-User-ID");
+        const urlParams = new URLSearchParams(window.location.search);
+        const imageId = urlParams.get('id');
+
+        const reloadImageDetails = async (imageId) => {
+            apiFetch(`/images/${imageId}/details`)
+                .then((response) => response.json())
+                .then((response) => {
+                    const responseData = response.data;
+
+                    const title = document.getElementById('title');
+                    title.innerText = `Image ${responseData.id}`;
+
+                    const image = document.getElementById('image');
+                    image.src = `api/images/${responseData.id}`;
+
+                    const username = document.querySelector('[data-to-fill="username"]');
+                    username.innerText = responseData.username;
+
+                    const createdAt = document.querySelector('[data-to-fill="created_at"]');
+                    const date = new Date(responseData.created_at);
+                    const formattedDate = date.toLocaleString('en-US');
+                    createdAt.innerText = formattedDate;
+
+                    const numComments = document.querySelector('[data-to-fill="num_comments"]');
+                    numComments.innerText = responseData.num_comments;
+
+                    const numLikes = document.querySelector('[data-to-fill="num_likes"]');
+                    numLikes.innerText = responseData.num_likes;
+
+                    if (userID == responseData.user_id) {
+                        const deleteButton = document.querySelector('button');
+                        deleteButton.style.display = 'block';
+                    }
+                })
+                .catch((error) => {
+                    console.error(`Error loading the image ${imageId}:`, error);
+                    window.location.href = '/';
+                });
+        };
+
+        const handleImageDelete = () => {
+            apiFetch(`/images/${imageId}`, {
+                method: 'DELETE',
+            }).then(() => {
+                window.location.href = '/';
+            }).catch((error) => {
+                console.error(`Error deleting the image ${imageId}:`, error);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            reloadImageDetails(imageId);
+        });
+    </script>
+</body>
+</html>
