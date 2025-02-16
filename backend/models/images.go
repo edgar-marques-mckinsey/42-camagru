@@ -90,6 +90,23 @@ func GetImage(id int) ([]byte, error) {
 	return imageData, nil
 }
 
+func GetImageDetails(id int) (Image, error) {
+	db := utils.GetDB()
+	row := db.QueryRow(`
+			SELECT id, user_id, data, created_at
+			from images
+			WHERE id = $1
+		`, id)
+
+	var image Image
+	err := row.Scan(&image.ID, &image.UserID, &image.Data, &image.CreatedAt)
+	if err != nil {
+		return Image{}, err
+	}
+
+	return image, nil
+}
+
 func GetNumImages() (int, error) {
 	db := utils.GetDB()
 	row := db.QueryRow(`
@@ -103,4 +120,14 @@ func GetNumImages() (int, error) {
 	}
 
 	return count, nil
+}
+
+func DeleteImage(id int) error {
+	db := utils.GetDB()
+	_, err := db.Exec(`
+			DELETE FROM images
+			WHERE id = $1
+		`, id)
+
+	return err
 }
