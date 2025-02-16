@@ -214,13 +214,20 @@ func GetImageDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	numLikes, err := models.GetLikesCount(imageId)
+	if err != nil {
+		fmt.Println("err.Error()", err.Error())
+		utils.SendError(w, err.Error())
+		return
+	}
+
 	response := GetImageDetailsResponse{
 		Id:          imageDetails.ID,
 		UserId:      user.ID,
 		Username:    user.Username,
 		CreatedAt:   imageDetails.CreatedAt,
 		NumComments: 5,
-		NumLikes:    20,
+		NumLikes:    numLikes,
 	}
 
 	utils.SendMessage(w, response)
