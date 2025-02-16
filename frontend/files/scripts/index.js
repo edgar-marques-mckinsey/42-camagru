@@ -1,5 +1,6 @@
 import "./auth.js";
 import "./form.js";
+import "./image.js";
 import "./utils.js";
 
 import "./components/index.js";
