@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/nfnt/resize"
@@ -181,6 +182,48 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.WriteHeader(http.StatusOK)
 	w.Write(imageData)
+}
+
+type GetImageDetailsResponse struct {
+	Id          int       `json:"id"`
+	UserId      int       `json:"user_id"`
+	Username    string    `json:"username"`
+	CreatedAt   time.Time `json:"created_at"`
+	NumComments int       `json:"num_comments"`
+	NumLikes    int       `json:"num_likes"`
+}
+
+func GetImageDetails(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	imageIdStr := vars["id"]
+	imageId, err := strconv.Atoi(imageIdStr)
+	if err != nil {
+		utils.SendError(w, "Invalid image ID")
+		return
+	}
+
+	imageDetails, err := models.GetImageDetails(imageId)
+	if err != nil {
+		utils.SendError(w, "Invalid image ID")
+		return
+	}
+
+	user, err := models.GetUser(imageDetails.UserID)
+	if err != nil {
+		utils.SendError(w, "Invalid image user ID")
+		return
+	}
+
+	response := GetImageDetailsResponse{
+		Id:          imageDetails.ID,
+		UserId:      user.ID,
+		Username:    user.Username,
+		CreatedAt:   imageDetails.CreatedAt,
+		NumComments: 5,
+		NumLikes:    20,
+	}
+
+	utils.SendMessage(w, response)
 }
 
 func DeleteImage(w http.ResponseWriter, r *http.Request) {
