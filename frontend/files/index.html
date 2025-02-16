@@ -18,6 +18,12 @@
         </section>
 
         <section class="container px-4 mx-auto">
+            <h2
+                class="text-xl text-center"
+                id="no-images-disclaimer"
+                style="display: none;"
+            ></h2>
+
             <div
                 id="images-list"
                 class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 h-fit mt-[62px]"
@@ -45,6 +51,10 @@
                         total_pages,
                     } = response.data || {};
                     if (!images.length) {
+                        const noImagesDisclaimer = document.getElementById('no-images-disclaimer');
+                        noImagesDisclaimer.textContent = 'No images yet...';
+                        noImagesDisclaimer.style.display = 'block';
+
                         return;
                     }
 
