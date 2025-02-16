@@ -22,12 +22,16 @@ func CreateImage(id int, image []byte) error {
 	return err
 }
 
-func GetImages() ([]Image, error) {
+func GetImages(page int, imagesPerPage int) ([]Image, error) {
+	offset := (page - 1) * imagesPerPage
 	db := utils.GetDB()
 	rows, err := db.Query(`
 			SELECT id, user_id, data, created_at
 			FROM images
-		`)
+			ORDER BY created_at DESC
+			LIMIT $1
+			OFFSET $2
+		`, imagesPerPage, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -84,4 +88,19 @@ func GetImage(id int) ([]byte, error) {
 	}
 
 	return imageData, nil
+}
+
+func GetNumImages() (int, error) {
+	db := utils.GetDB()
+	row := db.QueryRow(`
+			SELECT COUNT(*)
+			FROM images
+		`)
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

@@ -23,27 +23,37 @@
                 class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 h-fit mt-[62px]"
             >
             </div>
+
+            <div
+                id="images-list-pagination"
+                class="flex justify-center gap-2 mt-6"
+            ></div>
         </section>
     </main>
 
     <script>
         const imagesList = document.getElementById('images-list');
 
-        const reloadImages = async () => {
-            apiFetch('/images')
+        const reloadImages = async (pageNum = 1) => {
+            apiFetch(`/images?page=${pageNum}`)
                 .then((response) => {
                     return response.json();
                 }).then((response) => {
-                    const data = response.data || [];
-                    if (!data.length) {
+                    const {
+                        images = [],
+                        current_page,
+                        page_size,
+                        total_items,
+                        total_pages,
+                    } = response.data || {};
+                    if (!images.length) {
                         return;
                     }
 
                     imagesList.innerHTML = '';
 
-                    data
+                    images
                         .sort((a,b) => b.id - a.id)
-                        .slice(0, 12)
                         .forEach((image) => {
                             const img = document.createElement('img');
                             img.src = `api/images/${image.id}`;
@@ -53,6 +63,58 @@
                             const link = document.createElement('a');
                             imagesList.appendChild(img);
                         });
+
+                    if (total_pages > 1) {
+                        const pagination = document.getElementById('images-list-pagination');
+                        pagination.innerHTML = '';
+
+                        const createButton = ({
+                            text,
+                            disabled = false,
+                            onClick = () => {},
+                        }) => {
+                            const button = document.createElement('button');
+                            button.textContent = text;
+                            button.disabled = disabled;
+                            button.classList.add('pagination-button');
+                            button.addEventListener('click', onClick);
+
+                            pagination.appendChild(button);
+                            return button;
+                        };
+
+                        // Previous button
+                        createButton({
+                            text: "<",
+                            disabled: current_page === 1,
+                            onClick: () => {
+                                reloadImages(current_page - 1);
+                            },
+                        });
+
+                        for (let i = 1; i <= total_pages; i++) {
+                            if (i < current_page - 2 || i > current_page + 2) {
+                                continue;
+                            }
+
+                            createButton({
+                                text: i,
+                                disabled: i === current_page,
+                                onClick: () => {
+                                    reloadImages(i);
+                                },
+                            });
+                        }
+
+                        // Next button
+                        createButton({
+                            text: ">",
+                            disabled: current_page === total_pages,
+                            onClick: () => {
+                                reloadImages(current_page + 1);
+                            },
+                        });
+                    }
                 }).catch((error) => {
                     console.error('Error fetching images: ', error);
                 });

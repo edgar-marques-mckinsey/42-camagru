@@ -104,14 +104,45 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 	utils.SendMessage(w, "Image created successfully", http.StatusCreated)
 }
 
+type GetImagesResponse struct {
+	Images      []models.Image `json:"images"`
+	CurrentPage int            `json:"current_page"`
+	PageSize    int            `json:"page_size"`
+	TotalItems  int            `json:"total_items"`
+	TotalPages  int            `json:"total_pages"`
+}
+
 func GetImages(w http.ResponseWriter, r *http.Request) {
-	images, err := models.GetImages()
+	imagesPerPage := 12
+	pageStr := r.URL.Query().Get("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	images, err := models.GetImages(page, imagesPerPage)
 	if err != nil {
 		utils.SendError(w, err.Error())
 		return
 	}
 
-	utils.SendMessage(w, images)
+	numImages, err := models.GetNumImages()
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	totalPages := (numImages + imagesPerPage - 1) / imagesPerPage
+
+	response := GetImagesResponse{
+		Images:      images,
+		CurrentPage: page,
+		PageSize:    imagesPerPage,
+		TotalItems:  numImages,
+		TotalPages:  totalPages,
+	}
+
+	utils.SendMessage(w, response)
 }
 
 func GetUserImages(w http.ResponseWriter, r *http.Request) {
