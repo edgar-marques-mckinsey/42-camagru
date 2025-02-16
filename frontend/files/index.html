@@ -16,6 +16,51 @@
                 Camagru App
             </h1>
         </section>
+
+        <section class="container px-4 mx-auto">
+            <div
+                id="images-list"
+                class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 h-fit mt-[62px]"
+            >
+            </div>
+        </section>
     </main>
+
+    <script>
+        const imagesList = document.getElementById('images-list');
+
+        const reloadImages = async () => {
+            apiFetch('/images')
+                .then((response) => {
+                    return response.json();
+                }).then((response) => {
+                    const data = response.data || [];
+                    if (!data.length) {
+                        return;
+                    }
+
+                    imagesList.innerHTML = '';
+
+                    data
+                        .sort((a,b) => b.id - a.id)
+                        .slice(0, 12)
+                        .forEach((image) => {
+                            const img = document.createElement('img');
+                            img.src = `api/images/${image.id}`;
+                            img.alt = 'Cool image';
+                            img.classList.add('rounded');
+
+                            const link = document.createElement('a');
+                            imagesList.appendChild(img);
+                        });
+                }).catch((error) => {
+                    console.error('Error fetching images: ', error);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            reloadImages();
+        });
+    </script>
 </body>
 </html>
