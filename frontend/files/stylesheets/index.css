@@ -1,6 +1,7 @@
 @import url("./form.css");
 @import url("./pagination.css");
 @import url("./profile.css");
+@import url("./tailwind.css");
 
 body {
     background: gainsboro;
