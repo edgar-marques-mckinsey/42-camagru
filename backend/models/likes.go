@@ -39,3 +39,20 @@ func UnlikeImage(userID int, imageId int) error {
 
 	return err
 }
+
+func WasImageLiked(userID int, imageId int) (bool, error) {
+	db := utils.GetDB()
+	row := db.QueryRow(`
+			SELECT EXISTS (
+				SELECT 1
+				FROM user_image_likes
+				WHERE user_id = $1 AND image_id = $2
+			)
+		`, userID, imageId)
+	var exists bool
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}

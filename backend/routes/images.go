@@ -191,6 +191,7 @@ type GetImageDetailsResponse struct {
 	CreatedAt   time.Time `json:"created_at"`
 	NumComments int       `json:"num_comments"`
 	NumLikes    int       `json:"num_likes"`
+	WasLiked    bool      `json:"was_liked"`
 }
 
 func GetImageDetails(w http.ResponseWriter, r *http.Request) {
@@ -216,9 +217,15 @@ func GetImageDetails(w http.ResponseWriter, r *http.Request) {
 
 	numLikes, err := models.GetLikesCount(imageId)
 	if err != nil {
-		fmt.Println("err.Error()", err.Error())
 		utils.SendError(w, err.Error())
 		return
+	}
+
+	wasLiked := false
+	userIDStr := r.Header.Get("X-User-ID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err == nil {
+		wasLiked, _ = models.WasImageLiked(userID, imageId)
 	}
 
 	response := GetImageDetailsResponse{
@@ -228,6 +235,7 @@ func GetImageDetails(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:   imageDetails.CreatedAt,
 		NumComments: 5,
 		NumLikes:    numLikes,
+		WasLiked:    wasLiked,
 	}
 
 	utils.SendMessage(w, response)
