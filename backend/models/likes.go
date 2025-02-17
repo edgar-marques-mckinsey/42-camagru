@@ -11,13 +11,13 @@ func GetLikesCount(imageId int) (int, error) {
 			FROM user_image_likes
 			WHERE image_id = $1
 		`, imageId)
-	var likesCount int
-	err := row.Scan(&likesCount)
+	var count int
+	err := row.Scan(&count)
 	if err != nil {
 		return 0, err
 	}
 
-	return likesCount, nil
+	return count, nil
 }
 
 func LikeImage(userID int, imageId int) error {

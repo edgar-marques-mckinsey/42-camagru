@@ -45,4 +45,7 @@ func InitRoutes(router *mux.Router) {
 	// Likes
 	router.HandleFunc("/images/{id}/like", LikeImage).Methods("POST")
 	router.HandleFunc("/images/{id}/unlike", UnlikeImage).Methods("POST")
+
+	// Comments
+	router.HandleFunc("/images/{id}/comments", CreateComment).Methods("POST")
 }
