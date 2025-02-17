@@ -15,6 +15,24 @@ type CreateCommentInput struct {
 	Content string `json:"content"`
 }
 
+func GetComments(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	imageIdStr := vars["id"]
+	imageId, err := strconv.Atoi(imageIdStr)
+	if err != nil {
+		utils.SendError(w, "Invalid image ID")
+		return
+	}
+
+	comments, err := models.GetComments(imageId)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	utils.SendMessage(w, comments)
+}
+
 func CreateComment(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.Header.Get("X-User-ID")
 	userID, err := strconv.Atoi(userIDStr)
