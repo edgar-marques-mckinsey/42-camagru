@@ -25,11 +25,23 @@
 
                     <button
                         onclick="handleImageDelete()"
-                        class="absolute top-2 right-2 fill-gray-800 hover:fill-red-800 w-fit bg-white/50 hover:bg-white/75 p-1 rounded duration-100"
+                        data-action="delete"
+                        class="absolute top-3 right-3 fill-gray-800 hover:fill-red-800 w-fit bg-white/50 hover:bg-white/75 p-1 rounded duration-100"
                         style="display: none;"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0 0 30 30">
                             <path d="M 14.984375 2.4863281 A 1.0001 1.0001 0 0 0 14 3.5 L 14 4 L 8.5 4 A 1.0001 1.0001 0 0 0 7.4863281 5 L 6 5 A 1.0001 1.0001 0 1 0 6 7 L 24 7 A 1.0001 1.0001 0 1 0 24 5 L 22.513672 5 A 1.0001 1.0001 0 0 0 21.5 4 L 16 4 L 16 3.5 A 1.0001 1.0001 0 0 0 14.984375 2.4863281 z M 6 9 L 7.7929688 24.234375 C 7.9109687 25.241375 8.7633438 26 9.7773438 26 L 20.222656 26 C 21.236656 26 22.088031 25.241375 22.207031 24.234375 L 24 9 L 6 9 z"></path>
+                        </svg>
+                    </button>
+
+                    <button
+                        onclick="handleImageToogleLike()"
+                        data-action="like"
+                        class="absolute top-3 right-3 fill-gray-800 hover:fill-red-800 w-fit bg-white/50 hover:bg-white/75 p-1 rounded duration-100"
+                        style="display: none;"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0 0 122.88 107.41">
+                            <path d="M60.83,17.19C68.84,8.84,74.45,1.62,86.79,0.21c23.17-2.66,44.48,21.06,32.78,44.41 c-3.33,6.65-10.11,14.56-17.61,22.32c-8.23,8.52-17.34,16.87-23.72,23.2l-17.4,17.26L46.46,93.56C29.16,76.9,0.95,55.93,0.02,29.95 C-0.63,11.75,13.73,0.09,30.25,0.3C45.01,0.5,51.22,7.84,60.83,17.19L60.83,17.19L60.83,17.19z"/>
                         </svg>
                     </button>
                 </div>
@@ -72,11 +84,15 @@
         const urlParams = new URLSearchParams(window.location.search);
         const imageId = urlParams.get('id');
 
+        let wasLiked = false;
+
         const reloadImageDetails = async (imageId) => {
             apiFetch(`/images/${imageId}/details`)
                 .then((response) => response.json())
                 .then((response) => {
                     const responseData = response.data;
+
+                    wasLiked = responseData.was_liked;
 
                     const title = document.getElementById('title');
                     title.innerText = `Image ${responseData.id}`;
@@ -99,8 +115,19 @@
                     numLikes.innerText = responseData.num_likes;
 
                     if (userID == responseData.user_id) {
-                        const deleteButton = document.querySelector('button');
+                        const deleteButton = document.querySelector('button[data-action="delete"]');
                         deleteButton.style.display = 'block';
+                    } else if (userID) {
+                        const likeButton = document.querySelector('button[data-action="like"]');
+                        likeButton.style.display = 'block';
+
+                        if (wasLiked) {
+                            likeButton.classList.remove('fill-gray-800');
+                            likeButton.classList.add('fill-red-800');
+                        } else {
+                            likeButton.classList.add('fill-gray-800');
+                            likeButton.classList.remove('fill-red-800');
+                        }
                     }
                 })
                 .catch((error) => {
@@ -116,6 +143,16 @@
                 window.location.href = '/';
             }).catch((error) => {
                 console.error(`Error deleting the image ${imageId}:`, error);
+            });
+        }
+
+        const handleImageToogleLike = () => {
+            apiFetch(`/images/${imageId}/${wasLiked ? 'unlike' : 'like'}`, {
+                method: 'POST',
+            }).then(() => {
+                reloadImageDetails(imageId);
+            }).catch((error) => {
+                console.error(`Error liking the image ${imageId}:`, error);
             });
         }
 

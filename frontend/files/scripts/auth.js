@@ -5,6 +5,7 @@ const PAGES_TO_SKIP_AUTH = [
     '/users/verify',
     '/users/forgot-password',
     '/users/renew-password',
+    '/images',
 ];
 
 window.routeNeedsAuth = () => {

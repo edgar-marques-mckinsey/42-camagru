@@ -61,16 +61,6 @@ func UnlikeImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	imageDetails, err := models.GetImageDetails(imageId)
-	if err != nil {
-		utils.SendError(w, "Invalid image ID")
-		return
-	}
-	if imageDetails.UserID != userID {
-		utils.SendError(w, "Cannot remove other users image likes")
-		return
-	}
-
 	err = models.UnlikeImage(userID, imageId)
 	if err != nil {
 		utils.SendError(w, err.Error())
