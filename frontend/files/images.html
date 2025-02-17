@@ -77,6 +77,37 @@
                 </div>
             </div>
         </section>
+
+        <section class="container px-4 mx-auto mt-8">
+            <h2 class="text-xl font-medium mb-4">
+                Comments
+            </h2>
+
+            <div
+                id="comments-list"
+                class="flex flex-col gap-4 mt-4"
+                style="display: none;"
+            ></div>
+
+            <form
+                id="comment-form"
+                class="mt-4"
+                onsubmit="submitComment(event)"
+            >
+                <textarea
+                    id="comment-input"
+                    class="w-full h-24 p-2 border border-gray-400 rounded"
+                    placeholder="Type your comment here..."
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="text-white font-medium hover:opacity-90 bg-gray-800 py-2 px-2 rounded mt-1"
+                >
+                    Comment
+                </button>
+            </form>
+        </section>
     </main>
 
     <script>
@@ -153,6 +184,22 @@
                 reloadImageDetails(imageId);
             }).catch((error) => {
                 console.error(`Error liking the image ${imageId}:`, error);
+            });
+        }
+
+        const submitComment = (event) => {
+            event.preventDefault();
+
+            apiFetch(`/images/${imageId}/comments`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    content: event.target[0].value,
+                }),
+            }).then(() => {
+                event.target[0].value = "";
+                reloadImageDetails(imageId);
+            }).catch((error) => {
+                console.error(`Error submitting the comment for the image ${imageId}:`, error);
             });
         }
 
