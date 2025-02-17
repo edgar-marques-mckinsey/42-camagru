@@ -18,6 +18,9 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
+      - EMAIL_ADDRESS=${EMAIL_ADDRESS}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     networks:
       - api_network
       - database_network
