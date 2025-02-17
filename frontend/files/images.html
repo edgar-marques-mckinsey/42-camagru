@@ -165,6 +165,45 @@
                     console.error(`Error loading the image ${imageId}:`, error);
                     window.location.href = '/';
                 });
+
+            apiFetch(`/images/${imageId}/comments`)
+            .then((response) => response.json())
+            .then((response) => {
+                const responseData = response.data;
+
+                const commentsList = document.getElementById('comments-list');
+                commentsList.innerHTML = '';
+
+                if (responseData.length === 0) {
+                    commentsList.style.display = 'none';
+                    return;
+                }
+
+                response.data.forEach((comment) => {
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('bg-white/60', 'p-4', 'rounded');
+
+                    const commentUser = document.createElement('p');
+                    commentUser.classList.add('mb-1');
+                    commentUser.innerHTML = `<b>User:</b> ${comment.username}`;
+                    commentElement.appendChild(commentUser);
+
+                    const commentCreatedAt = document.createElement('p');
+                    commentCreatedAt.classList.add('mb-4');
+                    const date = new Date(comment.created_at);
+                    const formattedDate = date.toLocaleString('en-US');
+                    commentCreatedAt.innerHTML = `<b>Date:</b> ${formattedDate}`;
+                    commentElement.appendChild(commentCreatedAt);
+
+                    const commentContent = document.createElement('p');
+                    commentContent.innerText = comment.content;
+                    commentElement.appendChild(commentContent);
+
+                    commentsList.appendChild(commentElement);
+                });
+
+                commentsList.style.display = 'flex';
+            })
         };
 
         const handleImageDelete = () => {
