@@ -150,7 +150,7 @@
                     }, 33);
                 })
                 .catch(err => {
-                    console.error("Error starting the webcam: ", err);
+                    // console.error("Error starting the webcam: ", err);
                 });
         }
 
@@ -209,7 +209,7 @@
                         .map((image) => image.id);
                     fillImagesList(imageIds);
                 }).catch((error) => {
-                    console.error('Error fetching images: ', error);
+                    // console.error('Error fetching images: ', error);
                 });
         }
 
@@ -274,7 +274,7 @@
                 }
                 throw new Error('Error capturing photo');
             }).catch((error) => {
-                console.error('Error capturing photo: ', error);
+                // console.error('Error capturing photo: ', error);
             });
         });
 

@@ -170,7 +170,7 @@
                     }
                 })
                 .catch((error) => {
-                    console.error(`Error loading the image ${imageId}:`, error);
+                    // console.error(`Error loading the image ${imageId}:`, error);
                     window.location.href = '/';
                 });
 
@@ -220,7 +220,7 @@
             }).then(() => {
                 window.location.href = '/';
             }).catch((error) => {
-                console.error(`Error deleting the image ${imageId}:`, error);
+                // console.error(`Error deleting the image ${imageId}:`, error);
             });
         }
 
@@ -230,7 +230,7 @@
             }).then(() => {
                 reloadImageDetails(imageId);
             }).catch((error) => {
-                console.error(`Error liking the image ${imageId}:`, error);
+                // console.error(`Error liking the image ${imageId}:`, error);
             });
         }
 
@@ -246,7 +246,7 @@
                 event.target[0].value = "";
                 reloadImageDetails(imageId);
             }).catch((error) => {
-                console.error(`Error submitting the comment for the image ${imageId}:`, error);
+                // console.error(`Error submitting the comment for the image ${imageId}:`, error);
             });
         }
 
