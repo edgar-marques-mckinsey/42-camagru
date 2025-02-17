@@ -90,21 +90,23 @@
             ></div>
 
             <form
+                onsubmit="submitComment(event)"
                 id="comment-form"
                 class="mt-4"
-                onsubmit="submitComment(event)"
+                style="display: none;"
             >
                 <textarea
                     id="comment-input"
                     class="w-full h-24 p-2 border border-gray-400 rounded"
                     placeholder="Type your comment here..."
+                    required
                 ></textarea>
 
                 <button
                     type="submit"
                     class="text-white font-medium hover:opacity-90 bg-gray-800 py-2 px-2 rounded mt-1"
                 >
-                    Comment
+                    Leave a Comment
                 </button>
             </form>
         </section>
@@ -160,6 +162,13 @@
                             likeButton.classList.remove('fill-red-800');
                         }
                     }
+
+                    const commentForm = document.getElementById('comment-form');
+                    if (userID) {
+                        commentForm.style.display = 'block';
+                    } else {
+                        commentForm.style.display = 'none';
+                    }
                 })
                 .catch((error) => {
                     console.error(`Error loading the image ${imageId}:`, error);
@@ -167,43 +176,43 @@
                 });
 
             apiFetch(`/images/${imageId}/comments`)
-            .then((response) => response.json())
-            .then((response) => {
-                const responseData = response.data;
+                .then((response) => response.json())
+                .then((response) => {
+                    const responseData = response.data;
 
-                const commentsList = document.getElementById('comments-list');
-                commentsList.innerHTML = '';
+                    const commentsList = document.getElementById('comments-list');
+                    commentsList.innerHTML = '';
 
-                if (responseData.length === 0) {
-                    commentsList.style.display = 'none';
-                    return;
-                }
+                    if (responseData.length === 0) {
+                        commentsList.style.display = 'none';
+                        return;
+                    }
 
-                response.data.forEach((comment) => {
-                    const commentElement = document.createElement('div');
-                    commentElement.classList.add('bg-white/60', 'p-4', 'rounded');
+                    response.data.forEach((comment) => {
+                        const commentElement = document.createElement('div');
+                        commentElement.classList.add('bg-white/60', 'p-4', 'rounded');
 
-                    const commentUser = document.createElement('p');
-                    commentUser.classList.add('mb-1');
-                    commentUser.innerHTML = `<b>User:</b> ${comment.username}`;
-                    commentElement.appendChild(commentUser);
+                        const commentUser = document.createElement('p');
+                        commentUser.classList.add('mb-1');
+                        commentUser.innerHTML = `<b>User:</b> ${comment.username}`;
+                        commentElement.appendChild(commentUser);
 
-                    const commentCreatedAt = document.createElement('p');
-                    commentCreatedAt.classList.add('mb-4');
-                    const date = new Date(comment.created_at);
-                    const formattedDate = date.toLocaleString('en-US');
-                    commentCreatedAt.innerHTML = `<b>Date:</b> ${formattedDate}`;
-                    commentElement.appendChild(commentCreatedAt);
+                        const commentCreatedAt = document.createElement('p');
+                        commentCreatedAt.classList.add('mb-4');
+                        const date = new Date(comment.created_at);
+                        const formattedDate = date.toLocaleString('en-US');
+                        commentCreatedAt.innerHTML = `<b>Date:</b> ${formattedDate}`;
+                        commentElement.appendChild(commentCreatedAt);
 
-                    const commentContent = document.createElement('p');
-                    commentContent.innerText = comment.content;
-                    commentElement.appendChild(commentContent);
+                        const commentContent = document.createElement('p');
+                        commentContent.innerText = comment.content;
+                        commentElement.appendChild(commentContent);
 
-                    commentsList.appendChild(commentElement);
-                });
+                        commentsList.appendChild(commentElement);
+                    });
 
-                commentsList.style.display = 'flex';
-            })
+                    commentsList.style.display = 'flex';
+                })
         };
 
         const handleImageDelete = () => {
