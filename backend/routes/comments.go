@@ -63,5 +63,17 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	imageDetails, err := models.GetImageDetails(imageId)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
+	err = models.SendCommentNotification(userID, imageDetails.UserID, input.Content)
+	if err != nil {
+		utils.SendError(w, err.Error())
+		return
+	}
+
 	utils.SendMessage(w, "Comment created successfully", http.StatusCreated)
 }

@@ -13,13 +13,14 @@ import (
 )
 
 type User struct {
-	ID               int       `json:"id"`
-	Username         string    `json:"username"`
-	Email            string    `json:"email"`
-	Password         string    `json:"-"`
-	WasEmailVerified bool      `json:"was_email_verified"`
-	VerificationCode string    `json:"verification_code"`
-	CreatedAt        time.Time `json:"created_at"`
+	ID                          int       `json:"id"`
+	Username                    string    `json:"username"`
+	Email                       string    `json:"email"`
+	Password                    string    `json:"-"`
+	WasEmailVerified            bool      `json:"was_email_verified"`
+	ReceiveCommentNotifications bool      `json:"receive_comment_notifications"`
+	VerificationCode            string    `json:"verification_code"`
+	CreatedAt                   time.Time `json:"created_at"`
 }
 
 func GetUsers() ([]User, error) {

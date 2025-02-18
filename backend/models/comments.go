@@ -87,3 +87,26 @@ func CreateComment(userID, imageID int, content string) error {
 
 	return err
 }
+
+func SendCommentNotification(fromUserID, toUserID int, content string) error {
+	fromUser, err := GetUser(fromUserID)
+	if err != nil {
+		return err
+	}
+
+	toUser, err := GetUser(toUserID)
+	if err != nil {
+		return err
+	}
+
+	if !toUser.ReceiveCommentNotifications {
+		return nil
+	}
+
+	emailSubject := "New Comment on Image"
+	emailContent := "The user " + fromUser.Username + " has commented on your image:\n\n" + content
+
+	utils.SendEmail(toUser.Email, emailSubject, emailContent)
+
+	return nil
+}
