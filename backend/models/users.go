@@ -13,20 +13,20 @@ import (
 )
 
 type User struct {
-	ID                          int       `json:"id"`
-	Username                    string    `json:"username"`
-	Email                       string    `json:"email"`
-	Password                    string    `json:"-"`
-	WasEmailVerified            bool      `json:"was_email_verified"`
-	ReceiveCommentNotifications bool      `json:"receive_comment_notifications"`
-	VerificationCode            string    `json:"verification_code"`
-	CreatedAt                   time.Time `json:"created_at"`
+	ID                   int       `json:"id"`
+	Username             string    `json:"username"`
+	Email                string    `json:"email"`
+	Password             string    `json:"-"`
+	WasEmailVerified     bool      `json:"was_email_verified"`
+	ReceiveNotifications bool      `json:"receive_notifications"`
+	VerificationCode     string    `json:"verification_code"`
+	CreatedAt            time.Time `json:"created_at"`
 }
 
 func GetUsers() ([]User, error) {
 	db := utils.GetDB()
 	rows, err := db.Query(`
-			SELECT id, username, email, password, was_email_verified, receive_comment_notifications, verification_code, created_at
+			SELECT id, username, email, password, was_email_verified, receive_notifications, verification_code, created_at
 			FROM users
 		`)
 	if err != nil {
@@ -36,7 +36,7 @@ func GetUsers() ([]User, error) {
 	users := []User{}
 	for rows.Next() {
 		var user User
-		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.ReceiveCommentNotifications, &user.VerificationCode, &user.CreatedAt)
+		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.ReceiveNotifications, &user.VerificationCode, &user.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -49,13 +49,13 @@ func GetUsers() ([]User, error) {
 func GetUser(id int) (User, error) {
 	db := utils.GetDB()
 	row := db.QueryRow(`
-			SELECT id, username, email, password, was_email_verified, receive_comment_notifications, verification_code, created_at
+			SELECT id, username, email, password, was_email_verified, receive_notifications, verification_code, created_at
 			FROM users
 			WHERE id = $1
 		`, id)
 
 	var user User
-	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.ReceiveCommentNotifications, &user.VerificationCode, &user.CreatedAt)
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.ReceiveNotifications, &user.VerificationCode, &user.CreatedAt)
 	if err != nil {
 		return User{}, err
 	}
@@ -66,13 +66,13 @@ func GetUser(id int) (User, error) {
 func GetUserByUsername(username string) (User, error) {
 	db := utils.GetDB()
 	row := db.QueryRow(`
-			SELECT id, username, email, password, was_email_verified, receive_comment_notifications, verification_code, created_at
+			SELECT id, username, email, password, was_email_verified, receive_notifications, verification_code, created_at
 			FROM users
 			WHERE username = $1
 		`, username)
 
 	var user User
-	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.ReceiveCommentNotifications, &user.VerificationCode, &user.CreatedAt)
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.WasEmailVerified, &user.ReceiveNotifications, &user.VerificationCode, &user.CreatedAt)
 	if err != nil {
 		return User{}, err
 	}

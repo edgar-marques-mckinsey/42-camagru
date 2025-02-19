@@ -99,7 +99,7 @@ func SendCommentNotification(fromUserID, toUserID int, content string) error {
 		return err
 	}
 
-	if !toUser.ReceiveCommentNotifications {
+	if !toUser.ReceiveNotifications {
 		return nil
 	}
 
