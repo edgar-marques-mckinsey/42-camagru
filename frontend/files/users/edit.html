@@ -34,6 +34,14 @@
                     <input type="email" id="email" name="email" placeholder="Email" autocomplete="email">
                 </label>
 
+                <label class="flex-row!" for="receive-notifications">
+                    <span>
+                        Receive email notifications
+                    </span>
+
+                    <input type="checkbox" id="receive-notifications" name="receive-notifications">
+                </label>
+
                 <label for="password">
                     <span>
                         Password
@@ -73,6 +81,7 @@
 
                         document.getElementById('username').placeholder = responseData.username;
                         document.getElementById('email').placeholder = responseData.email;
+                        document.getElementById('receive-notifications').checked = responseData.receive_notifications;
                     });
             }, 0);
         });

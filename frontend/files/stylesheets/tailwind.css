@@ -1154,6 +1154,9 @@
   .flex-row {
     flex-direction: row;
   }
+  .flex-row\! {
+    flex-direction: row !important;
+  }
   .flex-row-reverse {
     flex-direction: row-reverse;
   }

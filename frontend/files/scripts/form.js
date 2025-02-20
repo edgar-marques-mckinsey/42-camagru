@@ -8,6 +8,13 @@ window.handleFormSubmit = async (event, path, method, callback) => {
 
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());
+
+    // Convert checkbox input fields to boolean values
+    const inputs = event.target.querySelectorAll('input[type="checkbox"]');
+    inputs.forEach((input) => {
+        data[input.name] = input.checked;
+    });
+
     let isValid = false;
 
     const response = await apiFetch(path, {
