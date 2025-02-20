@@ -15,24 +15,21 @@ window.handleFormSubmit = async (event, path, method, callback) => {
         data[input.name] = input.checked;
     });
 
-    let isValid = false;
-
-    const response = await apiFetch(path, {
+    apiFetch(path, {
         method,
         body: JSON.stringify(data),
-    }).then((response) => {
-        isValid = response.status >= 200 && response.status <= 299;
-        return response.json()
-    });
+    })
+        .then((response) => response.json())
+        .then((response) => {
+            if (!response.success) {
+                setFormError(response.message);
+                return;
+            }
 
-    if (!isValid) {
-        setFormError(response.message);
-        return;
-    }
+            setFormError("");
 
-    setFormError("");
-
-    callback(response);
+            callback(response);
+        })
 }
 
 window.setFormError = (message = "") => {

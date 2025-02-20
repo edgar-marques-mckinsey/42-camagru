@@ -15,16 +15,12 @@ window.routeNeedsAuth = () => {
 window.isUserAuthenticated = async () => {
     return apiFetch('/users/auth', {
         method: 'POST',
-    }).then((response) => {
-        if (response.status === 200) {
-            return true;
-        } else {
-            return false;
-        }
     })
-    .catch(() => {
-        return false;
-    });
+        .then((response) => response.json())
+        .then((response) => response.success)
+        .catch(() => {
+            return false;
+        });
 }
 
 window.removeAuth = () => {
