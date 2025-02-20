@@ -40,10 +40,11 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type EditUserInput struct {
-	Username        string `json:"username"`
-	Email           string `json:"email"`
-	Password        string `json:"password"`
-	ConfirmPassword string `json:"confirm-password"`
+	Username             string `json:"username"`
+	Email                string `json:"email"`
+	ReceiveNotifications bool   `json:"receive-notifications"`
+	Password             string `json:"password"`
+	ConfirmPassword      string `json:"confirm-password"`
 }
 
 func EditUser(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +65,13 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if inputUser.Username+inputUser.Email+inputUser.Password == "" {
+	user, err := models.GetUser(id)
+	if err != nil {
+		utils.SendError(w, "Invalid user query")
+		return
+	}
+
+	if inputUser.Username+inputUser.Email+inputUser.Password == "" && inputUser.ReceiveNotifications == user.ReceiveNotifications {
 		utils.SendError(w, "Nothing to edit")
 		return
 	}
@@ -74,7 +81,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = models.EditUser(id, inputUser.Username, inputUser.Email, inputUser.Password)
+	err = models.EditUser(id, inputUser.Username, inputUser.Email, inputUser.Password, inputUser.ReceiveNotifications)
 	if err != nil {
 		utils.SendError(w, err.Error())
 		return

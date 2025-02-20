@@ -80,7 +80,7 @@ func GetUserByUsername(username string) (User, error) {
 	return user, nil
 }
 
-func EditUser(id int, username, email, password string) error {
+func EditUser(id int, username, email, password string, receiveNotifications bool) error {
 	err := validity.ValidateUser(username, email, password, false)
 	if err != nil {
 		return err
@@ -101,9 +101,7 @@ func EditUser(id int, username, email, password string) error {
 		fieldsToUpdate["password"] = hashPassword
 	}
 
-	if len(fieldsToUpdate) == 0 {
-		return errors.New("nothing to edit")
-	}
+	fieldsToUpdate["receive_notifications"] = receiveNotifications
 
 	var setClauses []string
 	var params []interface{}
