@@ -187,7 +187,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendMessage(w, "User created successfully", http.StatusCreated)
+	utils.SendMessage(w, "User created successfully")
 }
 
 type SignInUserInput struct {
@@ -243,7 +243,7 @@ func AuthUser(w http.ResponseWriter, r *http.Request) {
 	if utils.IsRequestAuthenticated(r) {
 		utils.SendMessage(w, "Authorized")
 	} else {
-		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		utils.SendError(w, "Unauthorized")
 	}
 }
 

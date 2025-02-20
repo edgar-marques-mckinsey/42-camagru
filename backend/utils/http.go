@@ -5,36 +5,32 @@ import (
 	"net/http"
 )
 
-type ErrorResponse struct {
+type Response struct {
+	Data    any    `json:"data"`
+	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
 
-func SendError(w http.ResponseWriter, msg string, status ...int) {
-	statusCode := http.StatusInternalServerError
-	if len(status) > 0 {
-		statusCode = status[0]
-	}
-
+func SendError(w http.ResponseWriter, msg string) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
+	w.WriteHeader(http.StatusOK)
 
-	response := ErrorResponse{Message: msg}
+	response := Response{
+		Data:    nil,
+		Success: false,
+		Message: msg,
+	}
 	json.NewEncoder(w).Encode(response)
 }
 
-type ValidResponse struct {
-	Data any `json:"data"`
-}
-
-func SendMessage(w http.ResponseWriter, data any, status ...int) {
-	statusCode := http.StatusOK
-	if len(status) > 0 {
-		statusCode = status[0]
-	}
-
+func SendMessage(w http.ResponseWriter, data any) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
+	w.WriteHeader(http.StatusOK)
 
-	response := ValidResponse{Data: data}
+	response := Response{
+		Data:    data,
+		Success: true,
+		Message: "Success",
+	}
 	json.NewEncoder(w).Encode(response)
 }

@@ -39,7 +39,7 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 
 	userIDStr := r.Header.Get("X-User-ID")
 	if userIDStr != idStr {
-		utils.SendError(w, "Invalid user ID", http.StatusUnauthorized)
+		utils.SendError(w, "Invalid user ID")
 		return
 	}
 
@@ -102,7 +102,7 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendMessage(w, "Image created successfully", http.StatusCreated)
+	utils.SendMessage(w, "Image created successfully")
 }
 
 type GetImagesResponse struct {
@@ -251,7 +251,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.Header.Get("X-User-ID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		utils.SendError(w, "Invalid user ID", http.StatusUnauthorized)
+		utils.SendError(w, "Invalid user ID")
 		return
 	}
 
@@ -269,7 +269,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if imageDetails.UserID != userID {
-		utils.SendError(w, "Invalid user ID", http.StatusUnauthorized)
+		utils.SendError(w, "Invalid user ID")
 		return
 	}
 
@@ -278,5 +278,5 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 		utils.SendError(w, err.Error())
 	}
 
-	utils.SendMessage(w, "Image deleted successfully", http.StatusNoContent)
+	utils.SendMessage(w, "Image deleted successfully")
 }

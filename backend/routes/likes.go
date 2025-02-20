@@ -14,7 +14,7 @@ func LikeImage(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.Header.Get("X-User-ID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		utils.SendError(w, "Invalid user ID", http.StatusUnauthorized)
+		utils.SendError(w, "Invalid user ID")
 		return
 	}
 
@@ -49,7 +49,7 @@ func UnlikeImage(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.Header.Get("X-User-ID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		utils.SendError(w, "Invalid user ID", http.StatusUnauthorized)
+		utils.SendError(w, "Invalid user ID")
 		return
 	}
 
